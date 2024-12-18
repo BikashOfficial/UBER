@@ -1,4 +1,4 @@
-# ✨ **/users/register Endpoint Documentation** ✨
+# ✨ **Endpoint Documentation** ✨
 
 This document provides detailed information about the `/users/register` and `/users/login` endpoints, including their descriptions, expected data formats, response examples, and status codes.
 
