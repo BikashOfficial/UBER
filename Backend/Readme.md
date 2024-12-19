@@ -100,7 +100,7 @@ The request body should contain the following fields:
 ```json
 {
   "email": "johndoe@example.com",
-  "password": "securepassword123"
+  "password": "securepassword123",
 }
 ```
 
