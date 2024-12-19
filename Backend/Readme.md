@@ -1,6 +1,6 @@
-# ✨ **Endpoint Documentation** ✨
+# ✨ **/users API Documentation** ✨
 
-This document provides detailed information about the `/users/register` and `/users/login` endpoints, including their descriptions, expected data formats, response examples, and status codes.
+This document provides detailed information about the `/users/register`, `/users/login`, `/user/profile`, and `/user/logout` endpoints, including their descriptions, expected data formats, response examples, and status codes.
 
 ---
 
@@ -10,6 +10,12 @@ The `/users/register` endpoint allows clients to register a new user. It validat
 
 ### `/users/login`
 The `/users/login` endpoint allows existing users to log in by validating their credentials and generating an authentication token upon successful login.
+
+### `/user/profile`
+The `/user/profile` endpoint retrieves the authenticated user's profile details.
+
+### `/user/logout`
+The `/user/logout` endpoint logs the user out by invalidating the authentication token.
 
 ---
 
@@ -100,7 +106,7 @@ The request body should contain the following fields:
 ```json
 {
   "email": "johndoe@example.com",
-  "password": "securepassword123",
+  "password": "securepassword123"
 }
 ```
 
@@ -133,13 +139,87 @@ If the login fails due to invalid credentials, the server responds with the foll
 
 ---
 
+### 3. `/user/profile`
+
+#### **Method**
+`GET`
+
+#### **URL**
+`/user/profile`
+
+### 📝 **Headers**
+| Header          | Value        | Required |
+|------------------|--------------|----------|
+| **Authorization** | Bearer token | Yes      |
+
+### 📤 **Response Format**
+The server responds with the authenticated user's profile details.
+
+#### ✅ **Success Response** (Status Code: `200`)
+```json
+{
+  "user": {
+    "_id": "64a5f0c1234abc56789ef012",
+    "fullname": {
+      "firstname": "John",
+      "lastname": "Doe"
+    },
+    "email": "johndoe@example.com",
+    "socketId": null
+  }
+}
+```
+
+#### ❌ **Error Response** (Status Code: `401`)
+If the user is not authenticated, the server responds with:
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+
+### 4. `/user/logout`
+
+#### **Method**
+`POST`
+
+#### **URL**
+`/user/logout`
+
+### 📝 **Headers**
+| Header          | Value        | Required |
+|------------------|--------------|----------|
+| **Authorization** | Bearer token | Yes      |
+
+### 📤 **Response Format**
+The server responds with a message confirming the logout.
+
+#### ✅ **Success Response** (Status Code: `200`)
+```json
+{
+  "message": "User logged out successfully"
+}
+```
+
+#### ❌ **Error Response** (Status Code: `401`)
+If the user is not authenticated, the server responds with:
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+
 ## 📊 **Status Codes**
 | Status Code | Description                              |
 |-------------|------------------------------------------|
 | `201`       | User successfully created (register).    |
-| `200`       | User successfully logged in (login).     |
+| `200`       | Request successful (login, profile, logout). |
 | `400`       | Validation errors in the request payload.|
-| `401`       | Authentication failed (login).           |
+| `401`       | Authentication failed or unauthorized.   |
 | `500`       | Internal server error.                   |
 
 ---
@@ -152,4 +232,4 @@ If the login fails due to invalid credentials, the server responds with the foll
 
 ---
 
-🎉 **Thank you for using the `/users/register` and `/users/login` endpoints!**
+🎉 **Thank you for using the `/users` API endpoints!**
