@@ -1,25 +1,11 @@
-# ✨ **/users API Documentation** ✨
+# ✨ **API Documentation** ✨
 
-This document provides detailed information about the `/users/register`, `/users/login`, `/user/profile`, and `/user/logout` endpoints, including their descriptions, expected data formats, response examples, and status codes.
-
----
-
-## 🚀 **Endpoint Description**
-### `/users/register`
-The `/users/register` endpoint allows clients to register a new user. It validates the incoming request, hashes the password for security, creates a new user in the database, and generates an authentication token for the user.
-
-### `/users/login`
-The `/users/login` endpoint allows existing users to log in by validating their credentials and generating an authentication token upon successful login.
-
-### `/user/profile`
-The `/user/profile` endpoint retrieves the authenticated user's profile details.
-
-### `/user/logout`
-The `/user/logout` endpoint logs the user out by invalidating the authentication token.
+This document provides detailed information about the `/users` and `/captains` API endpoints, including their descriptions, expected data formats, response examples, and status codes.
 
 ---
 
-## Endpoints
+## 🚀 **User Endpoints**
+
 ### 1. `/users/register`
 
 #### **Method**
@@ -213,10 +199,210 @@ If the user is not authenticated, the server responds with:
 
 ---
 
+## 🚀 **Captain Endpoints**
+
+### 1. `/captains/register`
+
+#### **Method**
+`POST`
+
+#### **URL**
+`/captains/register`
+
+### 📥 **Request Data Format**
+The request body should contain the following fields:
+
+| Field       | Type     | Description                                       | Required |
+|-------------|----------|---------------------------------------------------|----------|
+| **fullname**    | Object   | The captain's full name containing `firstname` and `lastname`. | Yes      |
+| **firstname**   | String   | The captain's first name (min length: 3 characters). | Yes      |
+| **lastname**    | String   | The captain's last name (min length: 3 characters).  | No       |
+| **email**       | String   | The captain's email address (must be unique).        | Yes      |
+| **password**    | String   | The captain's password (min length: 6 characters).   | Yes      |
+| **licenseNumber** | String | The captain's license number.                      | Yes      |
+
+### 📝 **Example Request Body**
+```json
+{
+  "fullname": {
+    "firstname": "Jane",
+    "lastname": "Doe"
+  },
+  "email": "janedoe@example.com",
+  "password": "securepassword456",
+  "licenseNumber": "ABCD1234"
+}
+```
+
+### 📤 **Response Format**
+The server responds with a JSON object containing the authentication token and the newly created captain's data.
+
+#### ✅ **Success Response** (Status Code: `201`)
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "captain": {
+    "_id": "64a5f0c1234abc56789ef013",
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Doe"
+    },
+    "email": "janedoe@example.com",
+    "licenseNumber": "ABCD1234",
+    "socketId": null
+  }
+}
+```
+
+#### ❌ **Error Response** (Status Code: `400`)
+If the request validation fails, the server responds with the following structure:
+```json
+{
+  "errors": [
+    {
+      "msg": "License number is required",
+      "param": "licenseNumber",
+      "location": "body"
+    }
+  ]
+}
+```
+
+---
+
+### 2. `/captains/login`
+
+#### **Method**
+`POST`
+
+#### **URL**
+`/captains/login`
+
+### 📥 **Request Data Format**
+The request body should contain the following fields:
+
+| Field       | Type     | Description                             | Required |
+|-------------|----------|-----------------------------------------|----------|
+| **email**       | String   | The captain's email address.                | Yes      |
+| **password**    | String   | The captain's password.                     | Yes      |
+
+### 📝 **Example Request Body**
+```json
+{
+  "email": "janedoe@example.com",
+  "password": "securepassword456"
+}
+```
+
+### 📤 **Response Format**
+The server responds with a JSON object containing the authentication token and the captain's data.
+
+#### ✅ **Success Response** (Status Code: `200`)
+```json
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "captain": {
+    "_id": "64a5f0c1234abc56789ef013",
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Doe"
+    },
+    "email": "janedoe@example.com",
+    "licenseNumber": "ABCD1234",
+    "socketId": null
+  }
+}
+```
+
+#### ❌ **Error Response** (Status Code: `400` or `401`)
+If the login fails due to invalid credentials, the server responds with the following structure:
+```json
+{
+  "error": "Invalid email or password"
+}
+```
+
+---
+
+### 3. `/captain/profile`
+
+#### **Method**
+`GET`
+
+#### **URL**
+`/captain/profile`
+
+### 📝 **Headers**
+| Header          | Value        | Required |
+|------------------|--------------|----------|
+| **Authorization** | Bearer token | Yes      |
+
+### 📤 **Response Format**
+The server responds with the authenticated captain's profile details.
+
+#### ✅ **Success Response** (Status Code: `200`)
+```json
+{
+  "captain": {
+    "_id": "64a5f0c1234abc56789ef013",
+    "fullname": {
+      "firstname": "Jane",
+      "lastname": "Doe"
+    },
+    "email": "janedoe@example.com",
+    "licenseNumber": "ABCD1234",
+    "socketId": null
+  }
+}
+```
+
+#### ❌ **Error Response** (Status Code: `401`)
+If the captain is not authenticated, the server responds with:
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+
+### 4. `/captain/logout`
+
+#### **Method**
+`POST`
+
+#### **URL**
+`/captain/logout`
+
+### 📝 **Headers**
+| Header          | Value        | Required |
+|------------------|--------------|----------|
+| **Authorization** | Bearer token | Yes      |
+
+### 📤 **Response Format**
+The server responds with a message confirming the logout.
+
+#### ✅ **Success Response** (Status Code: `200`)
+```json
+{
+  "message": "Captain logged out successfully"
+}
+```
+
+#### ❌ **Error Response** (Status Code: `401`)
+If the captain is not authenticated, the server responds with:
+```json
+{
+  "error": "Unauthorized"
+}
+```
+
+---
+
 ## 📊 **Status Codes**
 | Status Code | Description                              |
 |-------------|------------------------------------------|
-| `201`       | User successfully created (register).    |
+| `201`       | User or Captain successfully created.    |
 | `200`       | Request successful (login, profile, logout). |
 | `400`       | Validation errors in the request payload.|
 | `401`       | Authentication failed or unauthorized.   |
@@ -225,11 +411,18 @@ If the user is not authenticated, the server responds with:
 ---
 
 ## 🛠 **Implementation Details**
-- **Controller:** [`user.controller.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/controllers/user.controller.js)
-- **Service:** [`user.service.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/services/user.service.js)
-- **Model:** [`user.model.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/models/user.model.js)
-- **Route:** [`user.routes.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/routes/user.routes.js)
+
+- **User Controller:** [`user.controller.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/controllers/user.controller.js)
+- **User Service:** [`user.service.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/services/user.service.js)
+- **User Model:** [`user.model.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/models/user.model.js)
+- **User Routes:** [`user.routes.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/routes/user.routes.js)
+
+- **Captain Controller:** [`captain.controller.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/controllers/captain.controller.js)
+- **Captain Service:** [`captain.service.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/services/captain.service.js)
+- **Captain Model:** [`captain.model.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/models/captain.model.js)
+- **Captain Routes:** [`captain.routes.js`](https://github.com/BikashOfficial/UBER/blob/main/Backend/routes/captain.routes.js)
+
 
 ---
 
-🎉 **Thank you for using the `/users` API endpoints!**
+🎉 **Thank you for using the `/users` and `/captain`API endpoints!**
