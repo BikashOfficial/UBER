@@ -1,4 +1,5 @@
 const axios = require('axios');
+const captainModel = require('../models/captain.model');
 
 module.exports.getAddressCoordinate = async (address) => {
     const apiKey = process.env.GOOGLE_MAP_API_KEY;
@@ -47,8 +48,8 @@ module.exports.getDistanceTime = async (origin, destination) => {
     }
 };
 
-module.exports.getAutoCompleteSuggestions = async (input) =>{
-    if(!input){
+module.exports.getAutoCompleteSuggestions = async (input) => {
+    if (!input) {
         throw new Error('Input is required');
     }
 
@@ -57,13 +58,25 @@ module.exports.getAutoCompleteSuggestions = async (input) =>{
 
     try {
         const response = await axios.get(url);
-        if(response.data.status === 'OK'){
+        if (response.data.status === 'OK') {
             return response.data.predictions;
-        }else{
+        } else {
             throw new Error('Unable to fetch autocomplete suggestions');
         }
     } catch (error) {
-        console.error('Error fetching autocomplete suggestions:', error.response? error.response.data : error.message);
+        console.error('Error fetching autocomplete suggestions:', error.response ? error.response.data : error.message);
         throw error;
     }
+}
+
+module.exports.getCaptainsInTheRadius = async (ltd, lng, radius) => {
+    const captains = await captainModel.find({
+        location: {
+            $geoWithin: {
+                $centerSphere: [[lng, ltd], radius / 6371] // Earth's radius in kilometers
+            }
+        }
+    })
+
+    return captains;
 }
