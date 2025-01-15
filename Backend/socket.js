@@ -33,7 +33,7 @@ function initializeSocket(server) {
                 return socket.emit("error",{ message: "invalid location" });
             }
 
-            await userModel.findByIdAndUpdate(userId, { location:{
+            await captainModel.findByIdAndUpdate(userId, { location:{
                 ltd: location.ltd,
                 lng: location.lng
             } });
